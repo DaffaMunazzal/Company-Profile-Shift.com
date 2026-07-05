@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
-import "./Navbar.css";
+import "../style/Navbar.css";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },

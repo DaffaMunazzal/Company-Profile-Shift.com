@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./Footer.css";
+import "../style/Footer.css";
 
 const BRAND_LINKS = ["Our Mission", "Precision Standards", "The Team", "Sustainability"];
 const QUICK_LINKS = ["PC Builder", "New Arrivals", "Support Center", "Warranty Policy"];
@@ -14,12 +14,6 @@ export default function Footer() {
 
     setStatus("loading");
     try {
-      // TODO backend: sambungkan ke endpoint newsletter kamu, contoh:
-      // await fetch("/api/newsletter/subscribe", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ email }),
-      // });
       await new Promise((resolve) => setTimeout(resolve, 500)); // simulasi request
       setStatus("success");
       setEmail("");

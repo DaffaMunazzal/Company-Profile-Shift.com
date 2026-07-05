@@ -1,0 +1,67 @@
+:root {
+  --color-primary: #bc000b;
+  --color-primary-dark: #8f0008;
+  --color-text-dark: #2a1614;
+  --color-text-body: #5f3f3a;
+  --color-border: #e9bcb6;
+  --color-bg-soft: #fff8f7;
+  --color-white: #ffffff;
+  --color-muted: #6b7280;
+
+  --font-heading: "Outfit", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  --container-max: 1440px;
+  --radius-sm: 8px;
+  --radius-full: 9999px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text-body);
+  background: var(--color-white);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-layout__content {
+  flex: 1 0 auto;
+}
