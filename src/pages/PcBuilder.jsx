@@ -205,7 +205,7 @@ export default function PcBuilder() {
                 >
                   <CategoryIcon type={cat.icon} />
                   <span>{cat.name}</span>
-                  {activeCategory === cat.name && <span className="pcb-dot pcb-dot--green pcb-cat-dot"></span>}
+                  {activeCategory === cat.name && <span></span>}
                 </button>
               ))}
             </div>
