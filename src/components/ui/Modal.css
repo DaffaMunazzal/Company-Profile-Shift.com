@@ -1,0 +1,75 @@
+.sc-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(42, 22, 20, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+  animation: sc-fade-in 0.18s ease-out;
+}
+
+.sc-modal {
+  background: var(--color-white, #fff);
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: sc-pop-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sc-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 0 24px;
+}
+
+.sc-modal__title {
+  font-family: var(--font-heading, "Outfit", sans-serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-dark, #2a1614);
+  margin: 0;
+}
+
+.sc-modal__close {
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.sc-modal__close:hover {
+  background: #f3f3f3;
+}
+
+.sc-modal__body {
+  padding: 20px 24px 24px 24px;
+}
+
+@keyframes sc-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sc-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
