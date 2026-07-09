@@ -1,0 +1,149 @@
+.service-card {
+  background: var(--color-white, #fff);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0px 12px 30px 0px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0px 18px 40px 0px rgba(0, 0, 0, 0.12);
+}
+
+.service-card__image-wrap {
+  height: 220px;
+  overflow: hidden;
+  background: var(--color-bg-soft, #fff8f7);
+}
+
+.service-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.service-card:hover .service-card__image {
+  transform: scale(1.05);
+}
+
+.service-card__body {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.service-card__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.service-card__name {
+  font-family: var(--font-heading, "Outfit", sans-serif);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--color-text-dark, #2a1614);
+  margin: 0;
+}
+
+.service-card__price {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary, #bc000b);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  padding-top: 4px;
+}
+
+.service-card__description {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text-body, #5f3f3a);
+  margin: 0 0 20px;
+  flex: 1;
+}
+
+.service-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.service-card__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #474746;
+}
+
+.service-card__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.service-card__book-btn {
+  flex: 1;
+  background: var(--color-text-dark, #2a1614);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-weight: 700;
+  font-size: 15px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.service-card__book-btn:hover {
+  background: var(--color-primary, #bc000b);
+}
+
+.service-card__book-btn:active {
+  transform: scale(0.98);
+}
+
+.service-card__cart-btn {
+  width: 52px;
+  flex-shrink: 0;
+  background: var(--color-primary, #bc000b);
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.service-card__cart-btn:hover {
+  background: var(--color-primary-dark, #8f0008);
+}
+
+.service-card__cart-btn:active {
+  transform: scale(0.94);
+}
+
+.service-card__cart-btn--added {
+  background: #16a34a;
+}
+
+@media (max-width: 640px) {
+  .service-card__body {
+    padding: 22px;
+  }
+
+  .service-card__name {
+    font-size: 20px;
+  }
+}
