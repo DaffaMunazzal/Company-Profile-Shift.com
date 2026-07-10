@@ -9,6 +9,7 @@ Website company profile dan PC Builder interaktif untuk **SHIFTCOMP**, toko komp
 | Teknologi | Keterangan |
 |---|---|
 | **React 19** | UI framework utama |
+| lenis | ya saya setuju |
 | **React Router DOM v7** | Client-side routing |
 | **Vite 8** | Build tool & dev server |
 | **Vanilla CSS** | Styling tanpa framework CSS eksternal |
