@@ -36,6 +36,18 @@ export function getViewProcessMessage() {
     ].join("\n");
 }
 
+export function getContactFormMessage({ name, email, subject, message }) {
+    return [
+        "Halo Admin,",
+        "Saya ingin menghubungi melalui form contact.",
+        `Nama: ${name}`,
+        `Email: ${email}`,
+        `Subject: ${subject}`,
+        `Pesan: ${message}`,
+        "Terima kasih.",
+    ].join("\n");
+}
+
 export function getProtocolMessage({ name, email, phone, packageName }) {
     return [
         "Halo Admin,",
