@@ -1,18 +1,29 @@
-// contoh halaman utama. Nanti di ganti
 import MainLayout from "../components/MainLayout";
+import HeroSection from "../components/home/HeroSection";
+import CategoryGrid from "../components/home/CategoryGrid";
+import FeaturedProducts from "../components/home/FeaturedProducts";
+import WhyChooseUs from "../components/home/WhyChooseUs";
+import PcBuilderPromo from "../components/home/PcBuilderPromo";
+import Testimonials from "../components/home/Testimonials";
+import Newsletter from "../components/home/Newsletter";
+import useLenis from "../hooks/useLenis";
+import "../style/Products.css"; // reuse .product-card styles for FeaturedProducts
+import "../style/Home.css";
 
 export default function Home() {
-    return (
-        <MainLayout activePath="/">
-            <section style={{ padding: "80px 64px", textAlign: "center" }}>
-                <h1 style={{ fontFamily: "var(--font-heading)", color: "var(--color-text-dark)" }}>
-                Selamat Datang di SHIFTCOMP
-                </h1>
-                <p style={{ maxWidth: 520, margin: "16px auto 0", color: "var(--color-text-body)" }}>
-                Ini halaman contoh. Navbar dan Footer di atas & bawah otomatis muncul
-                karena dibungkus lewat komponen <code>MainLayout</code>.
-                </p>
-            </section>
-        </MainLayout>
-    )
+  // Smooth scroll (inertia) untuk seluruh halaman Home.
+  // Kalau mau berlaku di semua halaman, pindahkan useLenis() ke MainLayout.jsx.
+  useLenis();
+
+  return (
+    <MainLayout activePath="/">
+      <HeroSection />
+      <CategoryGrid />
+      <FeaturedProducts />
+      <WhyChooseUs />
+      <PcBuilderPromo />
+      <Testimonials />
+      <Newsletter />
+    </MainLayout>
+  );
 }
