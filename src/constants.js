@@ -1,4 +1,4 @@
-export const WHATSAPP_NUMBER = "6289682959966";
+export const WHATSAPP_NUMBER = "6285174471076";
 
 export const BUSINESS_HOURS = [
     { day: "Senin - Jumat", hours: "09.00 - 21.00" },

@@ -1,12 +1,35 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext";
+import { SOCIAL_LINKS } from "../data/contactData";
+import { getViewProcessMessage, openWhatsApp } from "../utils/whatsapp";
 import "../style/Footer.css";
 
-const BRAND_LINKS = ["Our Mission", "Precision Standards", "The Team", "Sustainability"];
-const QUICK_LINKS = ["PC Builder", "New Arrivals", "Support Center", "Warranty Policy"];
+const SOCIAL_ICONS = {
+  instagram: InstagramIcon,
+  twitter: XIcon,
+  linkedin: XIcon,
+  youtube: YoutubeIcon,
+};
 
 export default function Footer() {
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
+
+  const BRAND_LINKS = [
+    { label: t("common.brandLinks.mission"), to: "/contact" },
+    { label: t("common.brandLinks.standards"), to: "/services" },
+    { label: t("common.brandLinks.team"), to: "/contact" },
+    { label: t("common.brandLinks.sustainability"), to: "/contact" },
+  ];
+
+  const QUICK_LINKS = [
+    { label: t("nav.pcBuilder"), to: "/pc-builder" },
+    { label: t("nav.products"), to: "/products" },
+    { label: t("common.quickLinks.support"), action: () => openWhatsApp(getViewProcessMessage(t)) },
+    { label: t("common.quickLinks.warranty"), to: "/services" },
+  ];
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -17,7 +40,7 @@ export default function Footer() {
       await new Promise((resolve) => setTimeout(resolve, 500)); // simulasi request
       setStatus("success");
       setEmail("");
-    } catch (err) {
+    } catch {
       setStatus("error");
     }
   };
@@ -30,31 +53,33 @@ export default function Footer() {
             {/* Brand */}
             <div className="footer__col footer__col--brand">
               <h3 className="footer__logo">SHIFTCOM</h3>
-              <p className="footer__tagline">
-                © 2026 SHIFTCOM. Precision
-                <br />
-                Engineering for Digital Creators.
-              </p>
+              <p className="footer__tagline">{t("footer.tagline")}</p>
               <div className="footer__socials">
-                <a href="#" className="footer__social-icon" aria-label="Twitter / X">
-                  <XIcon />
-                </a>
-                <a href="#" className="footer__social-icon" aria-label="Instagram">
-                  <InstagramIcon />
-                </a>
-                <a href="#" className="footer__social-icon" aria-label="Youtube">
-                  <YoutubeIcon />
-                </a>
+                {SOCIAL_LINKS.map((social) => {
+                  const Icon = SOCIAL_ICONS[social.id] || XIcon;
+                  return (
+                    <a
+                      key={social.id}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="footer__social-icon"
+                      aria-label={social.label}
+                    >
+                      <Icon />
+                    </a>
+                  );
+                })}
               </div>
             </div>
 
             {/* Brand Story */}
             <div className="footer__col">
-              <h5>Brand Story</h5>
+              <h5>{t("footer.brandStory")}</h5>
               <ul>
-                {BRAND_LINKS.map((label) => (
-                  <li key={label}>
-                    <a href="#">{label}</a>
+                {BRAND_LINKS.map((link) => (
+                  <li key={link.label}>
+                    <Link to={link.to}>{link.label}</Link>
                   </li>
                 ))}
               </ul>
@@ -62,11 +87,17 @@ export default function Footer() {
 
             {/* Quick Links */}
             <div className="footer__col">
-              <h5>Quick Links</h5>
+              <h5>{t("footer.quickLinks")}</h5>
               <ul>
-                {QUICK_LINKS.map((label) => (
-                  <li key={label}>
-                    <a href="#">{label}</a>
+                {QUICK_LINKS.map((link) => (
+                  <li key={link.label}>
+                    {link.to ? (
+                      <Link to={link.to}>{link.label}</Link>
+                    ) : (
+                      <button type="button" className="footer__link-btn" onClick={link.action}>
+                        {link.label}
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -74,33 +105,29 @@ export default function Footer() {
 
             {/* Newsletter */}
             <div className="footer__col">
-              <h5>Newsletter</h5>
-              <p className="footer__newsletter-text">
-                Stay updated with the latest in
-                <br />
-                performance tech.
-              </p>
+              <h5>{t("footer.newsletter")}</h5>
+              <p className="footer__newsletter-text">{t("footer.newsletterText")}</p>
               <form className="footer__form" onSubmit={handleSubscribe}>
                 <input
                   type="email"
                   required
-                  placeholder="Email Address"
+                  placeholder={t("footer.emailPlaceholder")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="footer__input"
                 />
                 <button type="submit" className="footer__subscribe-btn" disabled={status === "loading"}>
-                  {status === "loading" ? "Mengirim..." : "Subscribe"}
+                  {status === "loading" ? t("footer.sending") : t("footer.subscribe")}
                 </button>
-                {status === "success" && <p className="footer__form-msg footer__form-msg--ok">Terima kasih, berhasil subscribe!</p>}
-                {status === "error" && <p className="footer__form-msg footer__form-msg--err">Gagal, coba lagi.</p>}
+                {status === "success" && <p className="footer__form-msg footer__form-msg--ok">{t("footer.subscribeSuccess")}</p>}
+                {status === "error" && <p className="footer__form-msg footer__form-msg--err">{t("footer.subscribeError")}</p>}
               </form>
             </div>
           </div>
 
           <div className="footer__bottom">
-            <p className="footer__legal">Privacy Policy | Terms of Service | Cookies</p>
-            <p className="footer__badge">DESIGNED FOR PERFORMANCE</p>
+            <p className="footer__legal">{t("footer.legal")}</p>
+            <p className="footer__badge">{t("footer.badge")}</p>
           </div>
         </div>
       </div>

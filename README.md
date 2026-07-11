@@ -1,53 +1,91 @@
-﻿# SHIFTCOMP — Company Profile Website
+# SHIFTCOMP — Company Profile Website
 
-Website company profile dan PC Builder interaktif untuk **SHIFTCOMP**, toko komputer & perakitan PC profesional.
+Website company profile dan PC Builder interaktif untuk **SHIFTCOMP**, toko komputer & perakitan PC profesional berbasis di Pekalongan, Jawa Tengah.
 
 ---
 
 ## 🚀 Tech Stack
 
-| Teknologi | Keterangan |
-|---|---|
-| **React 19** | UI framework utama |
-| lenis | ya saya setuju |
-| **React Router DOM v7** | Client-side routing |
-| **Vite 8** | Build tool & dev server |
-| **Vanilla CSS** | Styling tanpa framework CSS eksternal |
-| **oxlint** | Linter JavaScript |
+| Teknologi | Versi | Keterangan |
+|---|---|---|
+| **React** | 19 | UI framework utama |
+| **React Router DOM** | 7 | Client-side routing |
+| **Vite** | 8 | Build tool & dev server |
+| **Lenis** | 1.3 | Smooth scrolling library |
+| **AOS** | 2.3 | Animate On Scroll — animasi saat scroll |
+| **MapLibre GL** | 5 | Peta interaktif pada halaman Contact |
+| **Vanilla CSS** | — | Styling tanpa framework CSS eksternal |
+| **oxlint** | — | Linter JavaScript |
 
 ---
 
 ## 📁 Struktur Proyek
 
 ```
-Company-Profile-Shift.com-main/
+SHIFTCOMP-updated-v3/
 ├── index.html
 ├── package.json
 ├── vite.config.js
 └── src/
-    ├── App.jsx                  # Root routing
-    ├── main.jsx                 # Entry point React
+    ├── App.jsx                      # Root routing + inisialisasi AOS
+    ├── main.jsx                     # Entry point React
+    ├── constants.js                 # Konstanta global (WhatsApp, jam operasional, paket protokol)
     ├── context/
-    │   └── CartContext.jsx      # Global cart state (Context API)
+    │   ├── CartContext.jsx          # Global cart state (Context API)
+    │   ├── WishlistContext.jsx      # Global wishlist state (Context API)
+    │   └── LanguageContext.jsx      # Internationalization / bahasa (Context API)
+    ├── i18n/
+    │   └── translations.js          # ⭐ Kamus terjemahan ID & EN (semua halaman)
+    ├── hooks/
+    │   ├── useLenis.js              # Hook untuk Lenis smooth scroll
+    │   └── useScrollReveal.js       # Hook animasi reveal saat scroll
     ├── components/
-    │   ├── MainLayout.jsx       # Layout wrapper (Navbar + Footer)
-    │   ├── Navbar.jsx           # Navigasi + mini cart dropdown
-    │   ├── Footer.jsx           # Footer website
-    │   └── products/            # Sub-komponen halaman Products
+    │   ├── MainLayout.jsx           # Layout wrapper (Navbar + Footer)
+    │   ├── Navbar.jsx               # Navigasi + mini cart + wishlist + language toggle
+    │   ├── Footer.jsx               # Footer website
+    │   ├── LocationMap.jsx          # Komponen peta MapLibre GL
+    │   ├── SmoothScroll.jsx         # Wrapper Lenis smooth scroll
+    │   ├── home/                    # Komponen-komponen halaman Home
+    │   │   ├── HeroSection.jsx
+    │   │   ├── CategoryGrid.jsx
+    │   │   ├── FeaturedProducts.jsx
+    │   │   ├── WhyChooseUs.jsx
+    │   │   ├── PcBuilderPromo.jsx
+    │   │   ├── Testimonials.jsx
+    │   │   ├── Newsletter.jsx
+    │   │   └── Reveal.jsx           # Animasi reveal komponen
+    │   ├── products/                # Sub-komponen halaman Products
+    │   │   ├── ProductCard.jsx
+    │   │   ├── FilterSidebar.jsx
+    │   │   └── Pagination.jsx
+    │   ├── services/                # Sub-komponen halaman Services
+    │   │   ├── ServiceCard.jsx
+    │   │   ├── ScheduleConsultationModal.jsx
+    │   │   ├── JoinProtocolModal.jsx
+    │   │   └── icon.jsx
+    │   └── ui/
+    │       └── Modal.jsx            # Komponen modal reusable
     ├── pages/
-    │   ├── Home.jsx             # Halaman utama
-    │   ├── Products.jsx         # Katalog produk
-    │   ├── PcBuilder.jsx        # ⭐ PC Builder interaktif
-    │   ├── Services.jsx         # Halaman layanan
-    │   └── Contact.jsx          # Halaman kontak
+    │   ├── Home.jsx                 # Halaman utama / landing page
+    │   ├── Products.jsx             # Katalog produk dengan filter & search
+    │   ├── PcBuilder.jsx            # ⭐ PC Builder interaktif
+    │   ├── Services.jsx             # Halaman layanan
+    │   └── Contact.jsx              # Halaman kontak + peta + FAQ
     ├── data/
-    │   └── products.js          # Database produk (40+ item, 7 kategori)
+    │   ├── products.js              # Database produk (40+ item, 7 kategori)
+    │   ├── servicesData.js          # Database layanan (6 jenis layanan)
+    │   └── contactData.js           # Data hub & link sosial media
+    ├── utils/
+    │   └── whatsapp.js              # Utility pembuatan pesan WhatsApp (i18n-ready)
     └── style/
-        ├── index.css            # CSS global & design tokens
+        ├── index.css                # CSS global & design tokens
         ├── Navbar.css
         ├── Footer.css
+        ├── Home.css
         ├── Products.css
-        └── PcBuilder.css        # Styling khusus PC Builder
+        ├── PcBuilder.css            # Styling khusus PC Builder
+        ├── Services.css
+        └── Contact.css
 ```
 
 ---
@@ -61,8 +99,8 @@ Company-Profile-Shift.com-main/
 ### Instalasi & Menjalankan Dev Server
 
 ```bash
-# 1. Clone / extract project
-cd Company-Profile-Shift.com-main
+# 1. Masuk ke direktori project
+cd NAMA FILE
 
 # 2. Install dependencies
 npm install
@@ -71,7 +109,7 @@ npm install
 npm run dev
 ```
 
-Buka browser dan akses: **http://localhost:5173**
+Buka browser dan akses: **http://localhost:PORT**
 
 ### Build untuk Produksi
 
@@ -96,8 +134,60 @@ npm run preview
 | `/` | `Home.jsx` | Landing page utama |
 | `/products` | `Products.jsx` | Katalog produk dengan filter & search |
 | `/pc-builder` | `PcBuilder.jsx` | PC Builder interaktif |
-| `/services` | `Services.jsx` | Daftar layanan |
-| `/contact` | `Contact.jsx` | Form kontak |
+| `/services` | `Services.jsx` | Daftar layanan & booking |
+| `/contact` | `Contact.jsx` | Form kontak + peta + FAQ |
+
+---
+
+## 🌐 Internasionalisasi (i18n)
+
+Website mendukung **2 bahasa**:
+- 🇮🇩 **Bahasa Indonesia** (default)
+- 🇬🇧 **English**
+
+### Cara Kerja
+Language toggle terdapat di pojok kanan Navbar. Pilihan bahasa disimpan di `localStorage` sehingga tetap diingat saat halaman di-refresh.
+
+Semua teks terkelola di satu file kamus:
+
+```
+src/i18n/translations.js
+```
+
+### Cakupan Terjemahan
+Seluruh halaman dan komponen sudah di-i18n-kan:
+
+| Area | Status |
+|---|---|
+| Navbar (link, cart, wishlist, language) | ✅ |
+| Footer (tagline, links, newsletter) | ✅ |
+| Halaman Home (semua seksi) | ✅ |
+| Halaman Products (hero, filter, sort, pagination) | ✅ |
+| Halaman Services (hero, kartu layanan, modal) | ✅ |
+| Halaman Contact (form, FAQ, jam operasional, peta) | ✅ |
+| PC Builder (kategori, kompatibilitas, aksi, PDF export) | ✅ |
+| Modal Konsultasi & Protokol | ✅ |
+| Pesan WhatsApp outbound | ✅ |
+
+### Menggunakan `useLanguage()` Hook
+
+```jsx
+import { useLanguage } from "../context/LanguageContext";
+
+function MyComponent() {
+  const { t, lang, toggleLang } = useLanguage();
+
+  return (
+    <div>
+      <p>{t("nav.home")}</p>
+      <p>{t("products.showing", { start: 1, end: 6, total: 40 })}</p>
+      <button onClick={toggleLang}>
+        {lang === "id" ? "Switch to EN" : "Ganti ke ID"}
+      </button>
+    </div>
+  );
+}
+```
 
 ---
 
@@ -123,53 +213,49 @@ Setiap kategori yang sudah dipilih ditandai ✓ pada sidebar.
 ### Build Presets (Tab GAMING / EDITING / AI/DEV)
 Klik tab di bagian atas untuk **otomatis memilih 7 komponen sekaligus** sesuai use case:
 
-- **GAMING** — Ryzen 7 7800X3D + RTX 4070 Ti + B650 Elite + RAM 32GB + SSD 2TB + PSU 850W + Corsair 4000D
-- **EDITING** — Core i9-14900KS + RTX 4080 Super + Z790 Ultimate + RAM 64GB + SSD 2TB + PSU 1000W + NZXT H510
-- **AI/DEV** — Ryzen 9 9950X3D + RTX 4090 + X670E Extreme + RAM 64GB + SSD 4TB Gen5 + PSU 1600W + Lian Li O11 XL
+| Preset | CPU | GPU | RAM | Storage | PSU | Case |
+|---|---|---|---|---|---|---|
+| **GAMING** | Ryzen 7 7800X3D | RTX 4070 Ti | 32GB | SSD 2TB Gen4 | 850W Gold | Corsair 4000D |
+| **EDITING** | Core i9-14900KS | RTX 4080 Super | 64GB | SSD 2TB | 1000W | NZXT H510 |
+| **AI/DEV** | Ryzen 9 9950X3D | RTX 4090 | 64GB | SSD 4TB Gen5 | 1600W | Lian Li O11 XL |
 
 ### Filter & Sorting
-- **Filter Brand** — saring produk berdasarkan merek/seri (NVIDIA Series, AMD Series, DDR5 Memory, dll.)
-- **Sort by** — urutkan produk berdasarkan:
-  - Latest Arrivals (terbaru)
-  - Price: Low to High
-  - Price: High to Low
-  - Name: A to Z
+- **Filter Brand** — saring produk berdasarkan merek/seri
+- **Sort by** — Terbaru / Harga: Rendah ke Tinggi / Harga: Tinggi ke Rendah / Nama: A–Z
 - **Clear Selection** — hapus pilihan pada kategori aktif
-
-### Kartu Produk
-Setiap produk menampilkan:
-- Foto produk asli
-- Badge diskon (jika ada)
-- Label kategori & variant
-- Deskripsi singkat
-- Spesifikasi utama (tag)
-- Status stok: **In Stock / Pre-Order / Limited / Out of Stock**
-- Harga dalam **Rupiah (IDR)** + harga coret jika ada diskon
-- Tombol **Select / Remove**
 
 ### Compatibility Check (Sidebar bawah)
 Pengecekan kompatibilitas real-time:
-- Hijau — CPU & Motherboard kompatibel (Intel → LGA, AMD → AM5)
-- Kuning — peringatan (misal belum memilih motherboard)
-- Merah — mismatch socket CPU vs Motherboard
+- 🟢 **Hijau** — CPU & Motherboard kompatibel (Intel → LGA, AMD → AM5)
+- 🟡 **Kuning** — peringatan (misal belum memilih motherboard)
+- 🔴 **Merah** — socket CPU vs Motherboard tidak cocok
 
 ### Right Panel — Build Summary & Aksi
 
-#### Build Actions
-
 | Tombol | Fungsi |
 |---|---|
-| **Export PDF Summary** | Buka tab baru dengan ringkasan build dalam format HTML, lalu trigger print dialog browser untuk disimpan sebagai PDF |
-| **WhatsApp Expert** | Buka WhatsApp dengan pesan otomatis berisi daftar komponen yang dipilih + total harga |
+| **Export PDF Summary** | Buka tab baru dengan ringkasan build dalam format HTML, lalu trigger print dialog |
+| **Inquire via WhatsApp** | Buka WhatsApp dengan pesan otomatis berisi daftar komponen + total harga |
 | **Reset Build** | Hapus semua pilihan komponen |
-
-#### Your Build
-Menampilkan daftar semua 7 kategori beserta komponen yang sudah dipilih, lengkap dengan harga masing-masing dan **total kumulatif**.
 
 ### Top Bar (Real-time)
 - **Total Configuration** — total harga semua komponen terpilih dalam IDR
-- **Power Draw** — estimasi konsumsi daya (dalam Watt)
+- **Estimated Power** — estimasi konsumsi daya (dalam Watt)
 - **Components** — jumlah komponen yang sudah dipilih dari total 7
+
+---
+
+## 🛒 Cart & Wishlist (Context API)
+
+```js
+// Cart
+const { items, totalItems, totalPrice, addItem, removeItem, updateQuantity } = useCart();
+
+// Wishlist
+const { items, totalItems, toggleItem, isWishlisted } = useWishlist();
+```
+
+Mini cart dan wishlist dapat diakses langsung dari ikon di Navbar.
 
 ---
 
@@ -181,7 +267,7 @@ File ini berisi **40+ produk** dengan struktur berikut:
 {
   id: "shft-4090-x",           // ID unik
   sku: "SHFT-4090-X",          // SKU produk
-  category: "gpu",             // Kategori (cpu|gpu|ram|motherboard|storage|psu|case)
+  category: "gpu",             // cpu | gpu | ram | motherboard | storage | psu | case
   categoryLabel: "NVIDIA Series",
   name: "GeForce RTX 4090",
   variant: "Precision Edition",
@@ -198,21 +284,9 @@ File ini berisi **40+ produk** dengan struktur berikut:
 
 Export yang tersedia dari `products.js`:
 - `PRODUCTS` — array semua produk
-- `CATEGORIES` — daftar kategori
+- `CATEGORIES` — daftar kategori (7 item)
 - `AVAILABILITY` — opsi filter stok
 - `SORT_OPTIONS` — opsi pengurutan
-
----
-
-## 🛒 Cart (Context API)
-
-File `src/context/CartContext.jsx` menyediakan global state untuk keranjang belanja, tersedia di seluruh aplikasi via `useCart()` hook:
-
-```js
-const { items, totalItems, totalPrice, addItem, removeItem, updateQuantity } = useCart();
-```
-
-Mini cart dapat diakses melalui ikon keranjang di Navbar.
 
 ---
 
@@ -246,13 +320,56 @@ npm run lint      # Lint dengan oxlint
 
 ## 📌 Catatan Developer
 
-- Nomor WhatsApp pada tombol **WhatsApp Expert** perlu diganti di `src/pages/PcBuilder.jsx`:
-  ```js
-  const phone = "6281234567890"; // Ganti dengan nomor WA aktif SHIFTCOMP
-  ```
-- Semua harga menggunakan format **IDR (Rupiah)** dengan `Intl.NumberFormat`.
-- Gambar produk menggunakan URL eksternal (Google Images thumbnails). Untuk produksi, sebaiknya host gambar sendiri.
-- Compatibility check bersifat **heuristik sederhana** berdasarkan nama produk. Untuk akurasi lebih tinggi, tambahkan field `socket` / `platform` di setiap produk.
+### Nomor WhatsApp
+Ganti nomor WhatsApp di `src/constants.js`:
+```js
+export const WHATSAPP_NUMBER = "628517447****";
+```
+
+### Menambah Terjemahan Baru
+Tambahkan key di kedua bahasa dalam `src/i18n/translations.js`:
+```js
+export const translations = {
+  id: {
+    mySection: {
+      myKey: "Teks dalam Bahasa Indonesia",
+    },
+  },
+  en: {
+    mySection: {
+      myKey: "Text in English",
+    },
+  },
+};
+```
+
+Lalu gunakan dengan `t("mySection.myKey")` di komponen mana pun.
+
+### Jam Operasional
+Jam operasional didefinisikan di `src/constants.js` dan digunakan secara konsisten di Contact page dan modal Schedule Consultation:
+```js
+export const BUSINESS_HOURS = [
+  { day: "Senin - Jumat", hours: "09.00 - 21.00" },
+  { day: "Sabtu",         hours: "09.00 - 18.00" },
+  { day: "Minggu",        hours: "Libur" },
+];
+```
+
+### Gambar Produk
+Gambar produk menggunakan URL eksternal. Untuk lingkungan produksi, sebaiknya host gambar di CDN sendiri.
+
+### Compatibility Check
+Pengecekan kompatibilitas bersifat **heuristik sederhana** berdasarkan nama produk. Untuk akurasi lebih tinggi, tambahkan field `socket` / `platform` di setiap produk di `products.js`.
+
+### Peta (MapLibre GL)
+Koordinat dan alamat hub utama dapat diubah di `src/data/contactData.js`:
+```js
+export const PRIMARY_HUB = {
+  coordinates: [-122.4014, 37.7899], // [longitude, latitude]
+  addressLines: ["Jl. Maninjau Keputran, Pekalongan, Jawa Tengah"],
+  mapQuery: "ShiftComp, Pekalongan, Jawa Tengah",
+};
+```
 
 ---
 
@@ -262,4 +379,4 @@ Lihat [CONTRIBUTING.md](./CONTRIBUTING.md) untuk panduan kontribusi.
 
 ---
 
-*SHIFTCOMP — Professional PC Building Services*
+*SHIFTCOMP — Professional PC Building Services | Pekalongan, Jawa Tengah 🇮🇩*

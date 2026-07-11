@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useCart } from "../../context/CartContext";
+import { useLanguage } from "../../context/LanguageContext";
 import { getBookServiceMessage, openWhatsApp } from "../../utils/whatsapp";
 import { META_ICONS, CartPlusIcon } from "./icon";
 import "./ServiceCard.css";
 
 export default function ServiceCard({ service }) {
     const { addItem } = useCart();
+    const { t } = useLanguage();
     const [added, setAdded] = useState(false);
 
     const handleBookService = () => {
-        openWhatsApp(getBookServiceMessage(service.name));
+        openWhatsApp(getBookServiceMessage(service.name, t));
     };
 
     const handleAddToCart = () => {
@@ -56,14 +58,14 @@ export default function ServiceCard({ service }) {
 
                 <div className="service-card__actions">
                     <button type="button" className="service-card__book-btn" onClick={handleBookService}>
-                        Book Service
+                        {t("services.bookService")}
                     </button>
                     <button
                         type="button"
                         className={`service-card__cart-btn ${added ? "service-card__cart-btn--added" : ""}`}
                         onClick={handleAddToCart}
-                        aria-label={`Tambahkan ${service.name} ke keranjang`}
-                        title="Tambah ke Keranjang"
+                        aria-label={t("services.addToCartAria", { name: service.name })}
+                        title={t("services.addToCartTitle")}
                     >
                         {added ? "✓" : <CartPlusIcon size={17} color="#ffffff" />}
                     </button>

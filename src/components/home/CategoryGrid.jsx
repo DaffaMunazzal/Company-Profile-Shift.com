@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import { CATEGORIES } from "../../data/products";
+import { useLanguage } from "../../context/LanguageContext";
 import Reveal from "./Reveal";
 
 const CATEGORY_ICONS = {
@@ -12,25 +14,27 @@ const CATEGORY_ICONS = {
 };
 
 export default function CategoryGrid() {
+  const { t } = useLanguage();
+
   return (
     <section className="home-categories">
       <div className="container">
         <Reveal as="div" className="home-section__header">
-          <h2>Belanja per Kategori</h2>
-          <p>Temukan komponen yang kamu butuhkan lebih cepat.</p>
+          <h2>{t("home.categories.title")}</h2>
+          <p>{t("home.categories.subtitle")}</p>
         </Reveal>
 
         <div className="home-categories__grid">
           {CATEGORIES.map((cat, i) => (
             <Reveal key={cat.id} delay={i * 60}>
-              <a href={`/products?category=${cat.id}`} className="home-category-card">
+              <Link to={`/products?category=${cat.id}`} className="home-category-card">
                 <span className="home-category-card__icon">
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
                     <path d={CATEGORY_ICONS[cat.id] || CATEGORY_ICONS.case} strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </span>
-                <span className="home-category-card__label">{cat.label}</span>
-              </a>
+                <span className="home-category-card__label">{t(`categories.${cat.id}`)}</span>
+              </Link>
             </Reveal>
           ))}
         </div>

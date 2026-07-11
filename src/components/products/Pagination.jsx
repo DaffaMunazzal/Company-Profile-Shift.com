@@ -1,3 +1,5 @@
+import { useLanguage } from "../../context/LanguageContext";
+
 function getPageList(curent, total) {
     const pages = new Set([1, total, curent, curent - 1, curent + 1]);
     const sorted = [...pages].filter((v) => v >= 1 && v <= total).sort((a, b) => a - b);
@@ -11,14 +13,15 @@ function getPageList(curent, total) {
 }
 
 export default function Pagination({ currentPage, totalPages, onPageChange }) {
+    const { t } = useLanguage();
     if (totalPages <= 1) return null;
     const pages = getPageList(currentPage, totalPages);
 
     return (
-        <nav aria-label="Navigasi halaman produk" className="pagination">
+        <nav aria-label={t("pagination.nav")} className="pagination">
             <button
             type="button"
-            aria-label="Halaman sebelumnya"
+            aria-label={t("pagination.prev")}
             disabled={currentPage === 1}
             onClick={() => onPageChange(currentPage - 1)}
             className="pagination__btn"
@@ -44,7 +47,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
             ))}
             <button
                 type="button"
-                aria-label="Halaman berikutnya"
+                aria-label={t("pagination.next")}
                 disabled={currentPage === totalPages}
                 onClick={() => onPageChange(currentPage + 1)}
                 className="pagination__btn"

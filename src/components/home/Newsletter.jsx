@@ -1,9 +1,11 @@
 import { useState } from "react";
 import Reveal from "./Reveal";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function Newsletter() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const { t } = useLanguage();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,21 +22,21 @@ export default function Newsletter() {
       <div className="container">
         <Reveal className="home-newsletter__box">
           <div>
-            <h2>Dapatkan Promo & Info Terbaru</h2>
-            <p>Berlangganan newsletter, jangan sampai ketinggalan diskon part PC.</p>
+            <h2>{t("home.newsletterSection.title")}</h2>
+            <p>{t("home.newsletterSection.desc")}</p>
           </div>
 
           <form className="home-newsletter__form" onSubmit={handleSubmit}>
             <input
               type="email"
               required
-              placeholder="Masukkan email kamu"
+              placeholder={t("home.newsletterSection.placeholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              aria-label="Alamat email"
+              aria-label={t("home.newsletterSection.ariaLabel")}
             />
             <button type="submit" className="btn btn--primary">
-              {submitted ? "Terkirim ✓" : "Berlangganan"}
+              {submitted ? t("home.newsletterSection.sent") : t("home.newsletterSection.btn")}
             </button>
           </form>
         </Reveal>

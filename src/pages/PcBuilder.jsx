@@ -1,17 +1,19 @@
 import { useState, useMemo } from "react";
 import MainLayout from "../components/MainLayout";
 import { PRODUCTS } from "../data/products";
+import { WHATSAPP_NUMBER } from "../constants";
+import { useLanguage } from "../context/LanguageContext";
 import "../style/PcBuilder.css";
 
 // ── Category definitions ────────────────────────────────────────────────────
 const CATEGORIES = [
-  { name: "Processor",     icon: "cpu",         key: "cpu"         },
-  { name: "Motherboard",   icon: "motherboard", key: "motherboard" },
-  { name: "Memory (RAM)",  icon: "ram",         key: "ram"         },
-  { name: "Graphics Card", icon: "gpu",         key: "gpu"         },
-  { name: "Storage",       icon: "storage",     key: "storage"     },
-  { name: "Power Supply",  icon: "psu",         key: "psu"         },
-  { name: "Case",          icon: "case",        key: "case"        },
+  { icon: "cpu",         key: "cpu"         },
+  { icon: "motherboard", key: "motherboard" },
+  { icon: "ram",         key: "ram"         },
+  { icon: "gpu",         key: "gpu"         },
+  { icon: "storage",     key: "storage"     },
+  { icon: "psu",         key: "psu"         },
+  { icon: "case",        key: "case"        },
 ];
 
 // ── Build presets ────────────────────────────────────────────────────────────
@@ -118,19 +120,19 @@ function formatIDR(price) {
 }
 
 // ── Stock badge ──────────────────────────────────────────────────────────────
-function StockBadge({ status }) {
+function StockBadge({ status, t }) {
   const map = {
-    "in-stock":   { label: "In Stock",   cls: "pcb-stock--green"  },
-    "pre-order":  { label: "Pre-Order",  cls: "pcb-stock--blue"   },
-    limited:      { label: "Limited",    cls: "pcb-stock--yellow" },
-    "out-of-stock": { label: "Out of Stock", cls: "pcb-stock--red" },
+    "in-stock":   { label: t("pcBuilder.stock.available"),     cls: "pcb-stock--green"  },
+    "pre-order":  { label: t("pcBuilder.stock.preorder"),    cls: "pcb-stock--blue"   },
+    limited:      { label: t("pcBuilder.stock.limited"),     cls: "pcb-stock--yellow" },
+    "out-of-stock": { label: t("pcBuilder.stock.outOfStock"), cls: "pcb-stock--red" },
   };
   const info = map[status] || { label: status, cls: "" };
   return <span className={`pcb-stock-badge ${info.cls}`}>{info.label}</span>;
 }
 
 // ── Compatibility check ──────────────────────────────────────────────────────
-function getCompatibility(selections) {
+function getCompatibility(selections, t) {
   const items = [];
   const cpu = PRODUCTS.find((p) => p.id === selections.cpu);
   const mb  = PRODUCTS.find((p) => p.id === selections.motherboard);
@@ -141,7 +143,7 @@ function getCompatibility(selections) {
   const totalSelected = Object.values(selections).filter(Boolean).length;
 
   if (totalSelected === 0) {
-    items.push({ status: "yellow", text: "No components selected yet. Start building!" });
+    items.push({ status: "yellow", text: t("pcBuilder.compatibilityMsgs.empty") });
     return items;
   }
 
@@ -153,24 +155,24 @@ function getCompatibility(selections) {
     const amdMb    = mb.name.toLowerCase().includes("x870") || mb.name.toLowerCase().includes("x670") || mb.name.toLowerCase().includes("b650") || mb.name.toLowerCase().includes("a520");
 
     if ((intelCpu && intelMb) || (amdCpu && amdMb)) {
-      items.push({ status: "green", text: `${cpu.name} is compatible with ${mb.name}.` });
+      items.push({ status: "green", text: t("pcBuilder.compatibilityMsgs.compatible", { cpu: cpu.name, mb: mb.name }) });
     } else if ((intelCpu && amdMb) || (amdCpu && intelMb)) {
-      items.push({ status: "red", text: `⚠ CPU/Motherboard socket mismatch! Check compatibility.` });
+      items.push({ status: "red", text: t("pcBuilder.compatibilityMsgs.socketMismatch") });
     } else {
-      items.push({ status: "green", text: `${cpu.name} selected with ${mb.name}.` });
+      items.push({ status: "green", text: t("pcBuilder.compatibilityMsgs.selectedWith", { cpu: cpu.name, mb: mb.name }) });
     }
   } else if (cpu) {
-    items.push({ status: "yellow", text: `${cpu.name} selected. Add a Motherboard.` });
+    items.push({ status: "yellow", text: t("pcBuilder.compatibilityMsgs.selectedAddMb", { cpu: cpu.name }) });
   } else if (mb) {
-    items.push({ status: "yellow", text: `${mb.name} selected. Add a CPU.` });
+    items.push({ status: "yellow", text: t("pcBuilder.compatibilityMsgs.selectedAddCpu", { mb: mb.name }) });
   }
 
   if (ram && mb) {
-    items.push({ status: "green", text: `RAM ${ram.name} added to your build.` });
+    items.push({ status: "green", text: t("pcBuilder.compatibilityMsgs.ramAdded", { ram: ram.name }) });
   }
 
   if (gpu) {
-    items.push({ status: "green", text: `${gpu.name} ready for your build.` });
+    items.push({ status: "green", text: t("pcBuilder.compatibilityMsgs.gpuReady", { gpu: gpu.name }) });
   }
 
   if (psu) {
@@ -187,20 +189,20 @@ function getCompatibility(selections) {
     const psuName = psu.name;
     const psuWatts = parseInt(psuName.match(/\d{3,4}W/)?.[0] || "0");
     if (psuWatts >= estimatedWatts) {
-      items.push({ status: "green", text: `${psuWatts}W PSU covers estimated ~${estimatedWatts}W load.` });
+      items.push({ status: "green", text: t("pcBuilder.compatibilityMsgs.psuSufficient", { psuWatts, estimatedWatts }) });
     } else if (psuWatts > 0) {
-      items.push({ status: "red", text: `⚠ PSU ${psuWatts}W may be insufficient for ~${estimatedWatts}W load.` });
+      items.push({ status: "red", text: t("pcBuilder.compatibilityMsgs.psuInsufficient", { psuWatts, estimatedWatts }) });
     } else {
-      items.push({ status: "green", text: `${psu.name} added.` });
+      items.push({ status: "green", text: t("pcBuilder.compatibilityMsgs.psuAdded", { psu: psu.name }) });
     }
   }
 
   if (totalSelected >= 5) {
-    items.push({ status: "green", text: "Build is taking shape! Almost complete." });
+    items.push({ status: "green", text: t("pcBuilder.compatibilityMsgs.buildFormed") });
   }
 
   if (items.length === 0) {
-    items.push({ status: "yellow", text: "Keep adding components to check compatibility." });
+    items.push({ status: "yellow", text: t("pcBuilder.compatibilityMsgs.continueAdding") });
   }
 
   return items;
@@ -208,29 +210,27 @@ function getCompatibility(selections) {
 
 // ── Main component ───────────────────────────────────────────────────────────
 export default function PcBuilder() {
-  const [activeCategory, setActiveCategory] = useState("Processor");
-  const [selections, setSelections]         = useState({});   // { cpu: id, gpu: id, … }
-  const [activeTab, setActiveTab]           = useState("GAMING");
-  const [sortOption, setSortOption]         = useState("latest");
-  const [filterBrand, setFilterBrand]       = useState("all");
-  const [showSortMenu, setShowSortMenu]     = useState(false);
-  const [showBrandMenu, setShowBrandMenu]   = useState(false);
+  const { t, lang } = useLanguage();
+  const [activeCategoryKey, setActiveCategoryKey] = useState("cpu"); // "cpu", "gpu", etc.
+  const [selections, setSelections]               = useState({});   // { cpu: id, gpu: id, … }
+  const [activeTab, setActiveTab]                 = useState("GAMING");
+  const [sortOption, setSortOption]               = useState("latest");
+  const [filterBrand, setFilterBrand]             = useState("all");
+  const [showSortMenu, setShowSortMenu]           = useState(false);
+  const [showBrandMenu, setShowBrandMenu]         = useState(false);
 
   const tabs = ["GAMING", "EDITING", "AI/DEV"];
 
-  // Current category key (e.g. "cpu")
-  const currentCatKey = CATEGORIES.find((c) => c.name === activeCategory)?.key ?? "cpu";
-
   // Products for current category
-  const baseProducts = PRODUCTS.filter((p) => p.category === currentCatKey);
+  const baseProducts = PRODUCTS.filter((p) => p.category === activeCategoryKey);
 
   // Unique brands for filter
   const brands = useMemo(() => {
-    const all = PRODUCTS.filter((p) => p.category === currentCatKey).map((p) =>
+    const all = PRODUCTS.filter((p) => p.category === activeCategoryKey).map((p) =>
       p.categoryLabel
     );
     return ["all", ...Array.from(new Set(all))];
-  }, [currentCatKey]);
+  }, [activeCategoryKey]);
 
   // Filtered + sorted products
   const displayProducts = useMemo(() => {
@@ -257,7 +257,7 @@ export default function PcBuilder() {
   }, [baseProducts, filterBrand, sortOption]);
 
   // Selected product for current category
-  const selectedId = selections[currentCatKey];
+  const selectedId = selections[activeCategoryKey];
 
   // Total price of all selected components
   const totalPrice = Object.values(selections).reduce((sum, id) => {
@@ -285,7 +285,7 @@ export default function PcBuilder() {
   }, [selections]);
 
   // Compatibility items
-  const compatibilityItems = useMemo(() => getCompatibility(selections), [selections]);
+  const compatibilityItems = useMemo(() => getCompatibility(selections, t), [selections, t]);
 
   // Select / deselect a product
   function toggleSelect(catKey, productId) {
@@ -304,10 +304,10 @@ export default function PcBuilder() {
 
   // Sort label map
   const sortLabels = {
-    latest:      "Latest Arrivals",
-    "price-asc": "Price: Low to High",
-    "price-desc":"Price: High to Low",
-    "name-asc":  "Name: A to Z",
+    latest:      t("sort.latest"),
+    "price-asc": t("sort.price-asc"),
+    "price-desc":t("sort.price-desc"),
+    "name-asc":  t("sort.name-asc"),
   };
 
   // ── Export PDF ────────────────────────────────────────────────────────────
@@ -316,18 +316,18 @@ export default function PcBuilder() {
       .filter(([, id]) => id)
       .map(([catKey, id]) => {
         const product = PRODUCTS.find((p) => p.id === id);
-        const catName = CATEGORIES.find((c) => c.key === catKey)?.name ?? catKey;
+        const catName = t(`categories.${catKey}`);
         return { catName, product };
       })
       .filter(({ product }) => product);
 
     if (selectedComponents.length === 0) {
-      alert("Please select at least one component to export.");
+      alert(t("pcBuilder.alertMinComponents"));
       return;
     }
 
     const buildName = `SHIFTCOM PC Build - ${activeTab}`;
-    const date = new Date().toLocaleDateString("id-ID", {
+    const date = new Date().toLocaleDateString(lang === "en" ? "en-US" : "id-ID", {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -346,7 +346,7 @@ export default function PcBuilder() {
       .join("");
 
     const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="${lang}">
 <head>
   <meta charset="UTF-8" />
   <title>${buildName}</title>
@@ -370,35 +370,35 @@ export default function PcBuilder() {
 </head>
 <body>
   <div class="header">
-    <h1>SHIFTCOM PC BUILDER</h1>
-    <span class="badge">${activeTab} BUILD</span>
+    <h1>${t("pcBuilder.pdfDoc.title")}</h1>
+    <span class="badge">${t("pcBuilder.pdfDoc.badge")} ${activeTab}</span>
   </div>
   <div class="section">
     <div class="meta">
-      <div class="meta-item"><span class="meta-label">Generated</span><span class="meta-value">${date}</span></div>
-      <div class="meta-item"><span class="meta-label">Components</span><span class="meta-value">${selectedComponents.length} Parts</span></div>
-      <div class="meta-item"><span class="meta-label">Est. Power</span><span class="meta-value">~${estimatedPower}W</span></div>
-      <div class="meta-item"><span class="meta-label">Total</span><span class="meta-value" style="color:#bc000b;">${formatIDR(totalPrice)}</span></div>
+      <div class="meta-item"><span class="meta-label">${t("pcBuilder.pdfDoc.created")}</span><span class="meta-value">${date}</span></div>
+      <div class="meta-item"><span class="meta-label">${t("pcBuilder.components")}</span><span class="meta-value">${selectedComponents.length} ${t("pcBuilder.pdfDoc.parts")}</span></div>
+      <div class="meta-item"><span class="meta-label">${t("pcBuilder.estPower")}</span><span class="meta-value">~${estimatedPower}W</span></div>
+      <div class="meta-item"><span class="meta-label">${t("pcBuilder.total")}</span><span class="meta-value" style="color:#bc000b;">${formatIDR(totalPrice)}</span></div>
     </div>
     <table>
       <thead>
         <tr>
-          <th>Component</th>
-          <th>Product</th>
-          <th>Specs</th>
-          <th style="text-align:right;">Price</th>
+          <th>${t("pcBuilder.comparison.headers.category")}</th>
+          <th>${t("pcBuilder.comparison.headers.product")}</th>
+          <th>${t("pcBuilder.comparison.headers.specs")}</th>
+          <th style="text-align:right;">${t("pcBuilder.comparison.headers.price")}</th>
         </tr>
       </thead>
       <tbody>
         ${rows}
         <tr class="total-row">
-          <td colspan="3">TOTAL CONFIGURATION</td>
+          <td colspan="3">${t("pcBuilder.pdfDoc.totalConfig")}</td>
           <td style="text-align:right;">${formatIDR(totalPrice)}</td>
         </tr>
       </tbody>
     </table>
   </div>
-  <div class="footer">SHIFTCOM.COM — Professional PC Building Services — This quote is valid for 7 days</div>
+  <div class="footer">${t("pcBuilder.pdfDoc.footer")}</div>
 </body>
 </html>`;
 
@@ -414,22 +414,21 @@ export default function PcBuilder() {
       .filter(([, id]) => id)
       .map(([catKey, id]) => {
         const product = PRODUCTS.find((p) => p.id === id);
-        const catName = CATEGORIES.find((c) => c.key === catKey)?.name ?? catKey;
+        const catName = t(`categories.${catKey}`);
         return product ? `• ${catName}: ${product.name} (${formatIDR(product.price)})` : null;
       })
       .filter(Boolean);
 
-    let message = `Halo SHIFTCOM! Saya ingin konsultasi tentang PC Build saya:\n\n`;
-    message += `🖥️ *${activeTab} BUILD*\n\n`;
+    let message = t("whatsapp.builderConsultationHeader", { preset: activeTab });
     if (selectedComponents.length > 0) {
       message += selectedComponents.join("\n");
       message += `\n\n💰 *Total: ${formatIDR(totalPrice)}*\n\n`;
     } else {
-      message += `Saya belum memilih komponen. Bisa bantu saya memilih?\n\n`;
+      message += t("whatsapp.builderConsultationEmpty");
     }
-    message += `Mohon bantu saya untuk mendapatkan penawaran terbaik. Terima kasih!`;
+    message += t("whatsapp.builderConsultationFooter");
 
-    const phone   = "6281234567890"; // replace with actual WhatsApp number
+    const phone   = WHATSAPP_NUMBER;
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/${phone}?text=${encoded}`, "_blank");
   }
@@ -442,20 +441,20 @@ export default function PcBuilder() {
         <div className="pcb-topbar">
           <div className="pcb-topbar-left">
             <div className="pcb-topbar-info">
-              <span className="pcb-topbar-label">TOTAL CONFIGURATION</span>
+              <span className="pcb-topbar-label">{t("pcBuilder.totalConfig")}</span>
               <span className="pcb-topbar-value">
                 {totalPrice > 0 ? formatIDR(totalPrice) : "—"}
               </span>
             </div>
             <div className="pcb-topbar-info">
-              <span className="pcb-topbar-label">POWER DRAW</span>
+              <span className="pcb-topbar-label">{t("pcBuilder.estPower")}</span>
               <span className="pcb-topbar-value">
                 ~{estimatedPower}W{" "}
                 <span className={`pcb-dot ${estimatedPower < 500 ? "pcb-dot--green" : "pcb-dot--yellow"}`} />
               </span>
             </div>
             <div className="pcb-topbar-info">
-              <span className="pcb-topbar-label">COMPONENTS</span>
+              <span className="pcb-topbar-label">{t("pcBuilder.components")}</span>
               <span className="pcb-topbar-value">
                 {Object.values(selections).filter(Boolean).length} / {CATEGORIES.length}
               </span>
@@ -469,7 +468,7 @@ export default function PcBuilder() {
                 key={tab}
                 className={`pcb-tab ${activeTab === tab ? "pcb-tab--active" : ""}`}
                 onClick={() => applyPreset(tab)}
-                title={`Load ${tab} preset`}
+                title={t("pcBuilder.presetLoadTitle", { tab })}
               >
                 {tab}
               </button>
@@ -483,13 +482,13 @@ export default function PcBuilder() {
                 <polyline points="16 6 12 2 8 6" />
                 <line x1="12" y1="2" x2="12" y2="15" />
               </svg>
-              Share Build
+              {t("pcBuilder.shareBuild")}
             </button>
             <button
               className="pcb-checkout-btn"
               onClick={handleWhatsApp}
             >
-              Order via WA →
+              {t("pcBuilder.orderWa")}
             </button>
           </div>
         </div>
@@ -501,16 +500,17 @@ export default function PcBuilder() {
             <div className="pcb-categories">
               {CATEGORIES.map((cat) => {
                 const hasSelection = Boolean(selections[cat.key]);
+                const catName = t(`categories.${cat.key}`);
                 return (
                   <button
-                    key={cat.name}
-                    className={`pcb-cat-btn ${activeCategory === cat.name ? "pcb-cat-btn--active" : ""}`}
-                    onClick={() => setActiveCategory(cat.name)}
+                    key={cat.key}
+                    className={`pcb-cat-btn ${activeCategoryKey === cat.key ? "pcb-cat-btn--active" : ""}`}
+                    onClick={() => setActiveCategoryKey(cat.key)}
                   >
                     <CategoryIcon type={cat.icon} />
-                    <span>{cat.name}</span>
+                    <span>{catName}</span>
                     {hasSelection && (
-                      <span className="pcb-cat-check" title="Component selected">✓</span>
+                      <span className="pcb-cat-check" title={t("pcBuilder.selected")}>✓</span>
                     )}
                   </button>
                 );
@@ -518,7 +518,7 @@ export default function PcBuilder() {
             </div>
 
             <div className="pcb-compat">
-              <h4 className="pcb-compat-title">Compatibility</h4>
+              <h4 className="pcb-compat-title">{t("pcBuilder.compatibility")}</h4>
               {compatibilityItems.map((item, i) => (
                 <div key={i} className="pcb-compat-item">
                   <span className={`pcb-compat-dot pcb-compat-dot--${item.status}`} />
@@ -531,9 +531,9 @@ export default function PcBuilder() {
           {/* ── MAIN CONTENT ────────────────────────────────────────────── */}
           <main className="pcb-main">
             <div className="pcb-main-header">
-              <h2 className="pcb-main-title">Select {activeCategory}</h2>
+              <h2 className="pcb-main-title">{t("pcBuilder.choose")} {t(`categories.${activeCategoryKey}`)}</h2>
               <p className="pcb-main-desc">
-                {displayProducts.length} products available · Click a card to select it for your build.
+                {t("pcBuilder.productsAvailable", { count: displayProducts.length })}
               </p>
             </div>
 
@@ -545,7 +545,7 @@ export default function PcBuilder() {
                   className="pcb-filter-btn"
                   onClick={() => { setShowBrandMenu((v) => !v); setShowSortMenu(false); }}
                 >
-                  {filterBrand === "all" ? "All Brands" : filterBrand} ▾
+                  {filterBrand === "all" ? t("pcBuilder.allBrands") : filterBrand} ▾
                 </button>
                 {showBrandMenu && (
                   <div className="pcb-dropdown-menu">
@@ -555,7 +555,7 @@ export default function PcBuilder() {
                         className={`pcb-dropdown-item ${filterBrand === b ? "pcb-dropdown-item--active" : ""}`}
                         onClick={() => { setFilterBrand(b); setShowBrandMenu(false); }}
                       >
-                        {b === "all" ? "All Brands" : b}
+                        {b === "all" ? t("pcBuilder.allBrands") : b}
                       </button>
                     ))}
                   </div>
@@ -568,7 +568,7 @@ export default function PcBuilder() {
                   className="pcb-filter-btn"
                   onClick={() => { setShowSortMenu((v) => !v); setShowBrandMenu(false); }}
                 >
-                  Sort: {sortLabels[sortOption]} ▾
+                  {t("pcBuilder.sortLabel")} {sortLabels[sortOption]} ▾
                 </button>
                 {showSortMenu && (
                   <div className="pcb-dropdown-menu">
@@ -589,9 +589,9 @@ export default function PcBuilder() {
               {selectedId && (
                 <button
                   className="pcb-filter-btn pcb-filter-btn--clear"
-                  onClick={() => toggleSelect(currentCatKey, selectedId)}
+                  onClick={() => toggleSelect(activeCategoryKey, selectedId)}
                 >
-                  ✕ Clear Selection
+                  {t("pcBuilder.clearSelection")}
                 </button>
               )}
             </div>
@@ -599,7 +599,7 @@ export default function PcBuilder() {
             {/* Product cards */}
             <div className="pcb-products">
               {displayProducts.length === 0 ? (
-                <p className="pcb-no-products">No products found for this filter.</p>
+                <p className="pcb-no-products">{t("pcBuilder.noProducts")}</p>
               ) : (
                 displayProducts.map((product) => {
                   const isSelected = selectedId === product.id;
@@ -607,9 +607,9 @@ export default function PcBuilder() {
                     <div
                       key={product.id}
                       className={`pcb-product-card ${isSelected ? "pcb-product-card--selected" : ""}`}
-                      onClick={() => toggleSelect(currentCatKey, product.id)}
+                      onClick={() => toggleSelect(activeCategoryKey, product.id)}
                     >
-                      {isSelected && <span className="pcb-product-badge">SELECTED ✓</span>}
+                      {isSelected && <span className="pcb-product-badge">{t("pcBuilder.selected")}</span>}
 
                       {/* Discount badge */}
                       {product.discountPercent > 0 && (
@@ -647,7 +647,7 @@ export default function PcBuilder() {
                         </div>
                       )}
 
-                      <StockBadge status={product.stockStatus} />
+                      <StockBadge status={product.stockStatus} t={t} />
 
                       <div className="pcb-product-bottom">
                         <div className="pcb-price-block">
@@ -660,9 +660,9 @@ export default function PcBuilder() {
                         </div>
                         <button
                           className={isSelected ? "pcb-product-remove" : "pcb-product-select"}
-                          onClick={(e) => { e.stopPropagation(); toggleSelect(currentCatKey, product.id); }}
+                          onClick={(e) => { e.stopPropagation(); toggleSelect(activeCategoryKey, product.id); }}
                         >
-                          {isSelected ? "Remove" : "Select"}
+                          {isSelected ? t("pcBuilder.removeBtn") : t("pcBuilder.selectBtn")}
                         </button>
                       </div>
                     </div>
@@ -675,16 +675,16 @@ export default function PcBuilder() {
             {displayProducts.length > 0 && (
               <div className="pcb-comparison">
                 <div className="pcb-comparison-header">
-                  <h3 className="pcb-comparison-title">Spec Comparison</h3>
+                  <h3 className="pcb-comparison-title">{t("pcBuilder.comparison.title")}</h3>
                 </div>
                 <table className="pcb-table">
                   <thead>
                     <tr>
-                      <th>Product</th>
-                      <th>Category</th>
-                      <th>Key Spec</th>
-                      <th>Stock</th>
-                      <th>Price</th>
+                      <th>{t("pcBuilder.comparison.headers.product")}</th>
+                      <th>{t("pcBuilder.comparison.headers.category")}</th>
+                      <th>{t("pcBuilder.comparison.headers.specs")}</th>
+                      <th>{t("pcBuilder.comparison.headers.stock")}</th>
+                      <th>{t("pcBuilder.comparison.headers.price")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -692,7 +692,7 @@ export default function PcBuilder() {
                       <tr
                         key={product.id}
                         className={`${selectedId === product.id ? "pcb-table-row--active" : ""} pcb-table-row-clickable`}
-                        onClick={() => toggleSelect(currentCatKey, product.id)}
+                        onClick={() => toggleSelect(activeCategoryKey, product.id)}
                       >
                         <td className="pcb-table-model">{product.name}</td>
                         <td>{product.categoryLabel}</td>
@@ -700,12 +700,12 @@ export default function PcBuilder() {
                         <td>
                           <span className={`pcb-table-stock pcb-table-stock--${product.stockStatus}`}>
                             {product.stockStatus === "in-stock"
-                              ? "✓ In Stock"
+                              ? t("pcBuilder.stock.available")
                               : product.stockStatus === "pre-order"
-                              ? "Pre-Order"
+                              ? t("pcBuilder.stock.preorder")
                               : product.stockStatus === "limited"
-                              ? "Limited"
-                              : "Out"}
+                              ? t("pcBuilder.stock.limited")
+                              : t("pcBuilder.stock.outOfStock")}
                           </span>
                         </td>
                         <td className="pcb-table-price">{formatIDR(product.price)}</td>
@@ -720,7 +720,7 @@ export default function PcBuilder() {
           {/* ── RIGHT PANEL ─────────────────────────────────────────────── */}
           <aside className="pcb-right">
             <div className="pcb-actions">
-              <h4 className="pcb-actions-title">BUILD ACTIONS</h4>
+              <h4 className="pcb-actions-title">{t("pcBuilder.actions.title")}</h4>
               <button className="pcb-action-btn pcb-action-btn--pdf" onClick={handleExportPDF}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
@@ -728,13 +728,13 @@ export default function PcBuilder() {
                   <line x1="16" y1="13" x2="8" y2="13" />
                   <line x1="16" y1="17" x2="8" y2="17" />
                 </svg>
-                Export PDF Summary
+                {t("pcBuilder.actions.pdf")}
               </button>
               <button className="pcb-action-btn pcb-action-btn--wa" onClick={handleWhatsApp}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
                 </svg>
-                WhatsApp Expert
+                {t("pcBuilder.actions.wa")}
               </button>
               <button
                 className="pcb-action-btn pcb-action-btn--reset"
@@ -744,21 +744,22 @@ export default function PcBuilder() {
                   <polyline points="1 4 1 10 7 10" />
                   <path d="M3.51 15a9 9 0 1 0 .49-4" />
                 </svg>
-                Reset Build
+                {t("pcBuilder.actions.reset")}
               </button>
             </div>
 
             {/* Build Summary */}
             <div className="pcb-summary">
-              <h4 className="pcb-saved-title">Your Build</h4>
+              <h4 className="pcb-saved-title">{t("pcBuilder.yourBuild")}</h4>
               {CATEGORIES.map((cat) => {
                 const selId = selections[cat.key];
                 const product = selId ? PRODUCTS.find((p) => p.id === selId) : null;
+                const catName = t(`categories.${cat.key}`);
                 return (
                   <div key={cat.key} className="pcb-summary-item">
                     <div className="pcb-summary-cat">
                       <CategoryIcon type={cat.icon} />
-                      <span className="pcb-summary-cat-name">{cat.name}</span>
+                      <span className="pcb-summary-cat-name">{catName}</span>
                     </div>
                     {product ? (
                       <div className="pcb-summary-product">
@@ -766,7 +767,7 @@ export default function PcBuilder() {
                         <span className="pcb-summary-price">{formatIDR(product.price)}</span>
                       </div>
                     ) : (
-                      <span className="pcb-summary-empty">Not selected</span>
+                      <span className="pcb-summary-empty">{t("pcBuilder.notSelected")}</span>
                     )}
                   </div>
                 );
@@ -774,7 +775,7 @@ export default function PcBuilder() {
 
               {totalPrice > 0 && (
                 <div className="pcb-summary-total">
-                  <span>TOTAL</span>
+                  <span>{t("pcBuilder.total")}</span>
                   <span>{formatIDR(totalPrice)}</span>
                 </div>
               )}

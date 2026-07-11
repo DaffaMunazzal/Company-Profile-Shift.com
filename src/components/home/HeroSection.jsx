@@ -1,40 +1,42 @@
+import { Link } from "react-router-dom";
 import Reveal from "./Reveal";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function HeroSection() {
+  const { t } = useLanguage();
+
   return (
     <section className="home-hero">
       <div className="container home-hero__inner">
         <Reveal className="home-hero__content">
-          <span className="home-hero__eyebrow">SHIFTCOMP • Since 2018</span>
+          <span className="home-hero__eyebrow">{t("home.hero.eyebrow")}</span>
           <h1 className="home-hero__title">
-            Rakit PC Impianmu, <span>Tanpa Ribet.</span>
+            {t("home.hero.titlePrefix")}<span>{t("home.hero.titleHighlight")}</span>{t("home.hero.titleSuffix")}
           </h1>
           <p className="home-hero__subtitle">
-            Komponen PC original dengan garansi resmi, harga bersaing, dan tim
-            teknisi berpengalaman yang siap bantu kamu dari pemilihan part
-            sampai instalasi.
+            {t("home.hero.subtitle")}
           </p>
           <div className="home-hero__actions">
-            <a href="/products" className="btn btn--primary">
-              Belanja Sekarang
-            </a>
-            <a href="/pc-builder" className="btn btn--outline">
-              Mulai PC Builder
-            </a>
+            <Link to="/products" className="btn btn--primary">
+              {t("home.hero.buyNow")}
+            </Link>
+            <Link to="/pc-builder" className="btn btn--outline">
+              {t("home.hero.startBuilder")}
+            </Link>
           </div>
 
           <div className="home-hero__stats">
             <div>
               <strong>10K+</strong>
-              <span>Pelanggan Puas</span>
+              <span>{t("home.hero.stats.customers")}</span>
             </div>
             <div>
               <strong>500+</strong>
-              <span>Produk Tersedia</span>
+              <span>{t("home.hero.stats.products")}</span>
             </div>
             <div>
               <strong>4.9/5</strong>
-              <span>Rating Toko</span>
+              <span>{t("home.hero.stats.rating")}</span>
             </div>
           </div>
         </Reveal>
@@ -47,7 +49,7 @@ export default function HeroSection() {
           />
           <div className="home-hero__badge">
             <span className="home-hero__badge-dot" />
-            Garansi Resmi 3 Tahun
+            {t("home.hero.badge")}
           </div>
         </Reveal>
       </div>

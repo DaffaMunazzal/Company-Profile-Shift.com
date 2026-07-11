@@ -1,19 +1,22 @@
+import { Link } from "react-router-dom";
 import Reveal from "./Reveal";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function PcBuilderPromo() {
+  const { t } = useLanguage();
+
   return (
     <section className="home-builder-promo">
       <div className="container home-builder-promo__inner">
         <Reveal className="home-builder-promo__text">
-          <span className="home-hero__eyebrow home-hero__eyebrow--light">PC Builder</span>
-          <h2>Rakit PC Sesuai Budget & Kebutuhanmu</h2>
+          <span className="home-hero__eyebrow home-hero__eyebrow--light">{t("home.promo.eyebrow")}</span>
+          <h2>{t("home.promo.title")}</h2>
           <p>
-            Pilih komponen satu-satu, cek kompatibilitas otomatis, dan lihat
-            estimasi harga total secara real-time sebelum checkout.
+            {t("home.promo.desc")}
           </p>
-          <a href="/pc-builder" className="btn btn--light">
-            Coba PC Builder
-          </a>
+          <Link to="/pc-builder" className="btn btn--light">
+            {t("home.promo.btn")}
+          </Link>
         </Reveal>
 
         <Reveal delay={120} className="home-builder-promo__media">

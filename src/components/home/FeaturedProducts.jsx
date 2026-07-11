@@ -1,23 +1,26 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { PRODUCTS } from "../../data/products";
 import ProductCard from "../products/ProductCard";
+import { useLanguage } from "../../context/LanguageContext";
 import Reveal from "./Reveal";
 
 const TABS = [
-  { id: "all", label: "Semua" },
-  { id: "discount", label: "Sedang Diskon" },
-  { id: "latest", label: "Terbaru" },
+  { id: "All" },
+  { id: "Discount" },
+  { id: "Latest" },
 ];
 
 export default function FeaturedProducts() {
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState("All");
+  const { t } = useLanguage();
 
   const products = useMemo(() => {
     let list = [...PRODUCTS];
 
-    if (activeTab === "discount") {
+    if (activeTab === "Discount") {
       list = list.filter((p) => p.discountPercent > 0);
-    } else if (activeTab === "latest") {
+    } else if (activeTab === "Latest") {
       list = list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
 
@@ -29,8 +32,8 @@ export default function FeaturedProducts() {
       <div className="container">
         <Reveal className="home-section__header home-section__header--row">
           <div>
-            <h2>Produk Unggulan</h2>
-            <p>Pilihan terbaik dari SHIFTCOMP, siap masuk keranjang kamu.</p>
+            <h2>{t("home.featured.title")}</h2>
+            <p>{t("home.featured.subtitle")}</p>
           </div>
 
           <div className="home-featured__tabs">
@@ -41,7 +44,7 @@ export default function FeaturedProducts() {
                 className={`home-featured__tab ${activeTab === tab.id ? "home-featured__tab--active" : ""}`}
                 onClick={() => setActiveTab(tab.id)}
               >
-                {tab.label}
+                {t(`${tab.id}`)}
               </button>
             ))}
           </div>
@@ -56,9 +59,9 @@ export default function FeaturedProducts() {
         </div>
 
         <Reveal className="home-featured__footer">
-          <a href="/products" className="btn btn--outline">
-            Lihat Semua Produk
-          </a>
+          <Link to="/products" className="btn btn--outline">
+            {t("home.featured.viewAll")}
+          </Link>
         </Reveal>
       </div>
     </section>

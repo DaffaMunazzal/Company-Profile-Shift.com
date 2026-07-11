@@ -1,9 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import MainLayout from "../components/MainLayout"
 import FilterSidebar from "../components/products/FilterSidebar"
 import ProductCard from "../components/products/ProductCard";
 import Pagination from "../components/products/Pagination";
-import { PRODUCTS, SORT_OPTIONS } from "../data/products";
+import { PRODUCTS, SORT_OPTIONS, CATEGORIES } from "../data/products";
+import { useLanguage } from "../context/LanguageContext";
 import "../style/Products.css"
 
 const PAGE_SIZE = 6;
@@ -15,7 +17,23 @@ const DEFAULT_FILTERS = {
 }
 
 export default function Products() {
-    const [filters, setFilters] = useState(DEFAULT_FILTERS);
+    const { t } = useLanguage();
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const initialCategory = searchParams.get("category");
+    const initialFilters = useMemo(() => {
+        if (initialCategory && CATEGORIES.some((c) => c.id === initialCategory)) {
+            return { ...DEFAULT_FILTERS, categories: [initialCategory] };
+        }
+        return DEFAULT_FILTERS;
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        if (initialCategory) setSearchParams({}, { replace: true });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const [filters, setFilters] = useState(initialFilters);
     const [searchInput, setSearchInput] = useState("");
     const [search, setSearch] = useState("");
     const [sortBy, setSortBy] = useState("latest");
@@ -76,25 +94,23 @@ export default function Products() {
         setPage(1);
     };
 
-    const currentSortLabel = SORT_OPTIONS.find((o) => o.id === sortBy)?.label;
+    const currentSortId = SORT_OPTIONS.find((o) => o.id === sortBy)?.id || sortBy;
+    const currentSortLabel = t(`sort.${currentSortId}`);
 
     return(
         <MainLayout activePath="/products">
             <div className="products-page">
                 <div className="products-page__container">
-                    <section className="products-hero">
-                        <h1 className="products-hero__title">Professional Grade Hardware.</h1>
-                        <p className="products-hero__subtitle">
-                            Browse our curated selection of high-performance components, engineered for
-                            creators and technical enthusiasts who demand perfection.
-                        </p>
+                    <section className="products-hero" data-aos="fade-up">
+                        <h1 className="products-hero__title">{t("products.heroTitle")}</h1>
+                        <p className="products-hero__subtitle">{t("products.heroSubtitle")}</p>
                     </section>
 
                     <section className="products-layout">
                         <button type="button"
                             onClick={() => setMobileFiltersOpen((o) => !o)}
                             className="products-layout__mobile-toggle">
-                            Filters
+                            {t("products.filters")}
                             <svg
                                 width="16"
                                 height="16"
@@ -124,18 +140,18 @@ export default function Products() {
                                     <input type="text"
                                         value={searchInput}
                                         onChange={(e) => setSearchInput(e.target.value)}
-                                        placeholder="Search by model, SKU, or series..."
+                                        placeholder={t("products.searchPlaceholder")}
                                         className="products-search__input"
                                     />
                                 </div>
                                 <button type="submit" className="products-search__submit">
-                                    Search Inventory
+                                    {t("products.searchSubmit")}
                                 </button>
                             </form>
                             <div className="products-toolbar">
-                                <p className="products-toolbar__count"> {filteredProducts.length === 0 ? "No products found" : `Showing ${rangeStart}-${rangeEnd} of ${filteredProducts.length} products`}</p>
+                                <p className="products-toolbar__count"> {filteredProducts.length === 0 ? t("products.noProducts") : t("products.showing", { start: rangeStart, end: rangeEnd, total: filteredProducts.length })}</p>
                                 <div className="products-sort">
-                                    <span className="products-sort__label">Sort by:</span>
+                                    <span className="products-sort__label">{t("products.sortBy")}</span>
                                     <button type="button" onClick={() => setSortOpen((o) => !o)} className="products-sort__trigger">
                                         {currentSortLabel}
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -150,7 +166,7 @@ export default function Products() {
                                                         setSortBy(opt.id);
                                                         setSortOpen(false)
                                                     }} className={`products-sort__item ${opt.id === sortBy ? "products-sort__item--active" : ""}`}>
-                                                        {opt.label}
+                                                        {t(`sort.${opt.id}`)}
                                                     </button>
                                                 </li>
                                             ))}
@@ -161,16 +177,18 @@ export default function Products() {
                             </div>
                             {pageItems.length > 0 ? (
                                 <div className="products-grid">
-                                    {pageItems.map((products) => (
-                                        <ProductCard key={products.id} product={products}/>
+                                    {pageItems.map((products, i) => (
+                                        <div key={products.id} data-aos="fade-up" data-aos-delay={(i % 3) * 80}>
+                                            <ProductCard product={products}/>
+                                        </div>
                                     ))}
                                 </div>
                             ) : (
                                 <div className="products-empty">
-                                    <p className="products-empty__title">No products match those filters</p>
-                                    <p className="products-empty__subtitle">Try widening your price range or clearing a filter.</p>
+                                    <p className="products-empty__title">{t("products.emptyTitle")}</p>
+                                    <p className="products-empty__subtitle">{t("products.emptySubtitle")}</p>
                                     <button type="button" onClick={handleClearFilters} className="products-empty__btn">
-                                        Clear all filters
+                                        {t("products.clearAll")}
                                     </button>
                                 </div>
                             )}

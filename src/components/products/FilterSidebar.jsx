@@ -1,6 +1,8 @@
 import { CATEGORIES, AVAILABILITY } from "../../data/products";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function FilterSidebar({ filters, onChange, onClear, className }) {
+    const { t } = useLanguage();
 
     const toggleCategory = (id) => {
         const next = filters.categories.includes(id)
@@ -14,7 +16,7 @@ export default function FilterSidebar({ filters, onChange, onClear, className })
     return (
         <aside className={`filter-sidebar ${className || ""}`}>
             <div className="filter-sidebar__group">
-                <h3 className="filter-sidebar__heading">Categories</h3>
+                <h3 className="filter-sidebar__heading">{t("filters.categories")}</h3>
                 <div className="filter-sidebar__options">
                     {CATEGORIES.map((cat) => (
                         <label key={cat.id} className="filter-sidebar__option">
@@ -23,14 +25,14 @@ export default function FilterSidebar({ filters, onChange, onClear, className })
                                 checked={filters.categories.includes(cat.id)}
                                 onChange={() => toggleCategory(cat.id)}
                             />
-                            <span>{cat.label}</span>
+                            <span>{t(`categories.${cat.id}`)}</span>
                         </label>
                     ))}
                 </div>
             </div>
 
             <div className="filter-sidebar__group">
-                <h3 className="filter-sidebar__heading">Availability</h3>
+                <h3 className="filter-sidebar__heading">{t("filters.availability")}</h3>
                 <div className="filter-sidebar__options">
                     { AVAILABILITY.map((avail) => (
                         <label key={avail.id} className="filter-sidebar__option">
@@ -39,14 +41,14 @@ export default function FilterSidebar({ filters, onChange, onClear, className })
                             checked={filters.availability === avail.id}
                             onChange={() => toggleAvailability(avail.id)}
                             />
-                            <span>{avail.label}</span>
+                            <span>{t(`availability.${avail.id}`)}</span>
                         </label>
                     ))}
                 </div>
             </div>
 
             <div className="filter-sidebar__group">
-                <h3 className="filter-sidebar__heading">Price Range</h3>
+                <h3 className="filter-sidebar__heading">{t("filters.priceRange")}</h3>
                 <div className="filter-sidebar__price">
                 <input
                     type="range"
@@ -70,7 +72,7 @@ export default function FilterSidebar({ filters, onChange, onClear, className })
 
             <div className="filter-sidebar__clear">
                 <button type="button" onClick={onClear} className="filter-sidebar__clear-btn">
-                    Clear All Filters
+                    {t("filters.clearAll")}
                 </button>
             </div>
         </aside>
