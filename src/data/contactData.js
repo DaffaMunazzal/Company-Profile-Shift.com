@@ -3,7 +3,7 @@ export const PRIMARY_HUB = {
   addressLines: [
     "Blimbing Rt 01/06, Wonorejo, Polokarto, Sukoharjo, Jawa Tengah, Indonesia",
   ],
-  mapQuery: "ShiftComp, Pekalongan, Jawa Tengah",
+  mapQuery: "ShiftComp, Wonorejo, Jawa Tengah",
 };
 
 export const SOCIAL_LINKS = [
